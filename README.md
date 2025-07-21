@@ -8,6 +8,6 @@ Quantum Mechanical Model of Hydrogen and non-Hydrogen elements visualized using 
 <img width="1919" height="1079" alt="Screenshot 2025-07-21 at 10 25 41 PM" src="https://github.com/user-attachments/assets/050d64b8-221a-412e-bbad-b84cc47a56d4" />
 
 ## Known Issues
-> Intensive RAM usage for N>300, n_samples/n_points>100000
-> No support for exception elements with differing electron configuration (Mn, Cu)
-> No user interface
+* Intensive RAM usage for N>300, n_samples/n_points>100000
+* No support for exception elements with differing electron configuration (Mn, Cu)
+* No user interface
