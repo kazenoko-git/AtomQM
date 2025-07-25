@@ -1,15 +1,10 @@
 # AtomQM
-Quantum Mechanical Model of Hydrogen and non-Hydrogen elements visualized using PyVista and PySCF.
+Quantum Mechanical Model of Hydrogen andnon-Hydrogen elements as well as molecules visualized using PyVista and PySCF.
 
 ## Working visualisations
-> Iron (Fe) Quantum Mechanical Model
-<img width="1920" height="1080" alt="Screenshot 2025-07-21 at 10 32 17 PM" src="https://github.com/user-attachments/assets/42784f2b-d5c3-42ac-a4bc-2bef715230da" />
+> Common Salt
+<img width="1668" height="1039" alt="Screenshot 2025-07-26 at 12 31 04 AM" src="https://github.com/user-attachments/assets/9b777dd0-124c-4474-82ce-a29d312fb52a" />
 
 
-> Hydrogen 3dz² Quantum Mechanical Model
-<img width="1919" height="1079" alt="Screenshot 2025-07-21 at 10 25 41 PM" src="https://github.com/user-attachments/assets/050d64b8-221a-412e-bbad-b84cc47a56d4" />
-
-## Known Issues
-* Intensive RAM usage for N>300, n_samples/n_points>100000
-* No support for exception elements with differing electron configuration (Mn, Cu)
-* No user interface
+> Hydrogen 3dz²
+<img width="1662" height="1038" alt="Screenshot 2025-07-26 at 12 30 49 AM" src="https://github.com/user-attachments/assets/7ff5f5bf-53f7-4531-9a1d-98c29adb802d" />
