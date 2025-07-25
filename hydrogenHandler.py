@@ -83,8 +83,8 @@ def show_orbital_cloud_pyvista(cloud, n, l, m, Z, N_points):
     plotter.show(title=f"Probability Density of Hydrogen {n}{subshell}{orbital} - AtomQM" if l < 3 else f"Probability Density of Hydrogen {n}{subshell} m={m} - AtomQM")
 
 # Example usage
-n, l, m = 3, 2, 0
+n, l, m = 6, 4, 0
 Z = 1
 N_points = 100000
-cloud = calculate_orbital_cloud(n, l, m, Z=Z, N=200, lim=12, N_points=N_points)
+cloud = calculate_orbital_cloud(n, l, m, Z=Z, N=500, lim=12, N_points=N_points)
 show_orbital_cloud_pyvista(cloud, n, l, m, Z, N_points)
