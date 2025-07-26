@@ -16,25 +16,36 @@ def autoSpin(nelec: int, user_spin: int | None) -> int:
     return user_spin
 
 def uniformGrid(extent=5.0, npts=120):
+    print("Generating uniform grid...")
     lin = np.linspace(-extent, extent, npts)
     X, Y, Z = np.meshgrid(lin, lin, lin, indexing='ij')
     pts = np.vstack((X.ravel(), Y.ravel(), Z.ravel())).T
+    print(f"{pts} points.")
     spacing = (2 * extent) / (npts - 1)
+    print(f"spacing = {spacing}")
     dims = (npts, npts, npts)
+    print(f"dims = {dims}")
     origin = (-extent, -extent, -extent)
+    print(f"origin = {origin}")
     return pts, dims, origin, (spacing, spacing, spacing)
 
 def hydrogenDensity(n, l, m, Z=1, npts=150, extent=15.0):
     pts, dims, origin, spacing = uniformGrid(extent, npts)
     r = np.linalg.norm(pts, axis=1)
+    print(f"r = {r}")
     th = np.arccos(np.clip(pts[:, 2] / r, -1, 1))
     ph = np.arctan2(pts[:, 1], pts[:, 0])
     rho = 2 * Z * r / n
+    print(f"rho = {rho}")
     pref = math.sqrt((2 * Z / n) ** 3 * factorial(n - l - 1) /
                      (2 * n * factorial(n + l)))
+    print(f"pref = {pref}")
     Rnl = pref * np.exp(-rho / 2) * rho ** l * eval_genlaguerre(n - l - 1, 2 * l + 1, rho)
+    print(f"Rnl = {Rnl}")
     Ylm = sph_harm(m, l, ph, th)
+    print(f"Ylm = {Ylm}")
     psi2 = np.abs(Rnl * Ylm) ** 2
+    print(f"psi2 = {psi2}")
 
     import pyvista as pv
     grid = pv.ImageData()
@@ -49,19 +60,24 @@ def pyscfMolecule(atom_string: str, basis='sto-3g', charge=0, spin: int | None =
     mol.atom, mol.basis, mol.charge = atom_string, basis, charge
     mol.build()
     mol.spin = autoSpin(mol.nelectron, spin)
+    print("Molecule built.\n",mol)
     return mol
 
 def hartreeFockGrid(mol, mo_index=0, mode='mo', npts=120, extent=None):
     mf = (scf.RHF if mol.spin == 0 else scf.UHF)(mol).run()
     pts, dims, origin, spacing = uniformGrid(extent or 6.0, npts)
     ao = mol.eval_gto("GTOval_sph", pts)
+    print(f"ao = {ao}")
     if mode == 'mo':
         coeff = mf.mo_coeff if mol.spin == 0 else mf.mo_coeff[0]
         psi = ao @ coeff[:, mo_index]
         field = np.abs(psi) ** 2
+        print(f"psi = {psi}")
+        print(f"field = {field}")
     else:
         dm = mf.make_rdm1()
         field = np.einsum("pi,ij,pj->p", ao, dm, ao)
+        print(f"field = {field}")
 
     import pyvista as pv
     grid = pv.ImageData()
