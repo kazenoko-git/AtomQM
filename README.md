@@ -1,10 +1,35 @@
-# AtomQM
-Quantum Mechanical Model of Hydrogen andnon-Hydrogen elements as well as molecules visualized using PyVista and PySCF.
+# AtomQM Documentation
 
-## Working visualisations
-> Common Salt
-<img width="1668" height="1039" alt="Screenshot 2025-07-26 at 12 31 04 AM" src="https://github.com/user-attachments/assets/9b777dd0-124c-4474-82ce-a29d312fb52a" />
+## GUI Usage
 
+This section provides a comprehensive guide on how to use the GUI features of AtomQM. 
+### Getting Started
+1. Launch the application.
+2. Navigate through the main menu to access various functionalities.
+3. Utilize tooltips for quick guidance on each component.
 
-> Hydrogen 3dz²
-<img width="1662" height="1038" alt="Screenshot 2025-07-26 at 12 30 49 AM" src="https://github.com/user-attachments/assets/7ff5f5bf-53f7-4531-9a1d-98c29adb802d" />
+### Features
+- **File Handling**: Open, save, and export files in different formats.
+- **Visual Analytics**: Access graphical representations of data.
+- **Settings Configuration**: Customize application settings for optimal user experience.
+
+## Performance Optimizations
+
+### Tips for Improving Performance
+- **System Requirements**: Ensure your machine meets the recommended hardware specifications.
+- **Memory Management**: Close unnecessary applications to free up memory while using AtomQM.
+- **Optimized Settings**: Adjust the performance settings in the configuration menu to suit your hardware capabilities.
+
+### Known Issues
+- Performance may degrade with large datasets; consider optimizing data structures before analysis.
+
+## Installation Instructions
+
+To install AtomQM, please follow these steps:
+1. **Download** the latest version from the [official releases page](https://github.com/kazenoko-git/AtomQM/releases).
+2. **Extract the package** to your preferred installation directory.
+3. **Run the installer** or execute the binary directly based on your operating system.
+4. **Follow the setup wizard** to complete the installation.
+5. **Check for Updates**: After installation, check the settings menu for updates to ensure the software is up to date.
+
+For detailed guides and troubleshooting, visit the [documentation page](https://kazenoko-git.github.io/AtomQM/).
