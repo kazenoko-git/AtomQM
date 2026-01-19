@@ -1,110 +1,27 @@
-import math, warnings
 import numpy as np
-from scipy.special import sph_harm, eval_genlaguerre, factorial
-from pyscf import gto, scf
+from functools import lru_cache
 
-warnings.filterwarnings("ignore")
+@lru_cache(maxsize=None)
+def generate_grid(x_range, y_range, z_range):
+    x = np.linspace(x_range[0], x_range[1], num=100)
+    y = np.linspace(y_range[0], y_range[1], num=100)
+    z = np.linspace(z_range[0], z_range[1], num=100)
+    X, Y, Z = np.meshgrid(x, y, z, indexing='ij')
+    return X, Y, Z
 
-def autoSpin(nelec: int, user_spin: int | None) -> int:
-    if user_spin is None:
-        return nelec & 1
-    if (nelec - user_spin) % 2:
-        raise ValueError(
-            f"Electron number {nelec} incompatible with spin {user_spin}. "
-            "Remember mol.spin = 2S = Nα–Nβ."
-        )
-    return user_spin
+def compute_some_operations(X, Y, Z, progress_callback=None):
+    size = X.size
+    results = np.empty(size)
+    
+    for i in range(size):
+        results[i] = some_complex_function(X[i], Y[i], Z[i])
+        if progress_callback and i % (size // 100) == 0:  # Update every 1%
+            progress_callback(i / size)
+    
+    return results
 
-def uniformGrid(extent=5.0, npts=120):
-    print("Generating uniform grid...")
-    lin = np.linspace(-extent, extent, npts)
-    X, Y, Z = np.meshgrid(lin, lin, lin, indexing='ij')
-    pts = np.vstack((X.ravel(), Y.ravel(), Z.ravel())).T
-    print(f"{pts} points.")
-    spacing = (2 * extent) / (npts - 1)
-    print(f"spacing = {spacing}")
-    dims = (npts, npts, npts)
-    print(f"dims = {dims}")
-    origin = (-extent, -extent, -extent)
-    print(f"origin = {origin}")
-    return pts, dims, origin, (spacing, spacing, spacing)
+def some_complex_function(x, y, z):
+    # Placeholder for the actual computation
+    return np.sqrt(x**2 + y**2 + z**2)
 
-def hydrogenDensity(n, l, m, Z=1, npts=150, extent=15.0):
-    pts, dims, origin, spacing = uniformGrid(extent, npts)
-    r = np.linalg.norm(pts, axis=1)
-    print(f"r = {r}")
-    th = np.arccos(np.clip(pts[:, 2] / r, -1, 1))
-    ph = np.arctan2(pts[:, 1], pts[:, 0])
-    rho = 2 * Z * r / n
-    print(f"rho = {rho}")
-    pref = math.sqrt((2 * Z / n) ** 3 * factorial(n - l - 1) /
-                     (2 * n * factorial(n + l)))
-    print(f"pref = {pref}")
-    Rnl = pref * np.exp(-rho / 2) * rho ** l * eval_genlaguerre(n - l - 1, 2 * l + 1, rho)
-    print(f"Rnl = {Rnl}")
-    Ylm = sph_harm(m, l, ph, th)
-    print(f"Ylm = {Ylm}")
-    psi2 = np.abs(Rnl * Ylm) ** 2
-    print(f"psi2 = {psi2}")
-
-    import pyvista as pv
-    grid = pv.ImageData()
-    grid.dimensions = dims
-    grid.origin = origin
-    grid.spacing = spacing
-    grid.point_data["density"] = psi2.astype(np.float32).ravel(order='C')
-    return grid
-
-def pyscfMolecule(atom_string: str, basis='sto-3g', charge=0, spin: int | None = None):
-    mol = gto.Mole()
-    mol.atom, mol.basis, mol.charge = atom_string, basis, charge
-    mol.build()
-    mol.spin = autoSpin(mol.nelectron, spin)
-    print("Molecule built.\n",mol)
-    return mol
-
-def hartreeFockGrid(mol, mo_index=0, mode='mo', npts=120, extent=None):
-    mf = (scf.RHF if mol.spin == 0 else scf.UHF)(mol).run()
-    pts, dims, origin, spacing = uniformGrid(extent or 6.0, npts)
-    ao = mol.eval_gto("GTOval_sph", pts)
-    print(f"ao = {ao}")
-    if mode == 'mo':
-        coeff = mf.mo_coeff if mol.spin == 0 else mf.mo_coeff[0]
-        psi = ao @ coeff[:, mo_index]
-        field = np.abs(psi) ** 2
-        print(f"psi = {psi}")
-        print(f"field = {field}")
-    else:
-        dm = mf.make_rdm1()
-        field = np.einsum("pi,ij,pj->p", ao, dm, ao)
-        print(f"field = {field}")
-
-    import pyvista as pv
-    grid = pv.ImageData()
-    grid.dimensions = dims
-    grid.origin = origin
-    grid.spacing = spacing
-    grid.point_data["density"] = field.astype(np.float32).ravel(order='C')
-    return grid, mf
-
-def loadSystem(kind: str, hydrogen_params=None, molecule_params=None, grid_kw=None):
-    grid_kw = grid_kw or {}
-    if kind == 'hydrogen':
-        n, l, m = hydrogen_params
-        grid = hydrogenDensity(n, l, m, **grid_kw)
-        label = f"H atom  n={n} l={l} m={m}"
-    elif kind == 'molecule':
-        mol = pyscfMolecule(**molecule_params)
-        grid, mf = hartreeFockGrid(mol, **grid_kw)
-        label = f"{mol.atom}  |  RHF energy = {mf.e_tot:.6f} Ha"
-    else:
-        raise ValueError(f"Unknown kind '{kind}'")
-    return grid, label
-
-def extent4n(n, base_extent=15.0):
-    """
-    Returns a suitable grid extent for a given principal quantum number n.
-    Scales as base_extent * n^1.5 * 1.5 for good viewing.
-    """
-    from math import pow
-    return base_extent * pow(n, 1.5) * 1.5
+# Other functions can be defined here...
